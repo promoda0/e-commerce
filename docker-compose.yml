@@ -1,0 +1,93 @@
+version: "3.9"
+
+services:
+  user_service:
+    image: python:3.11-slim
+    container_name: ecommerce_user_service
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r user_service/src/requirements.txt &&
+             uvicorn user_service.src.main:app --host 0.0.0.0 --port 8001 --reload"
+    ports:
+      - "8001:8001"
+
+  product_service:
+    image: python:3.11-slim
+    container_name: ecommerce_product_service
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r product_service/app/requirements.txt &&
+             uvicorn product_service.app.main:app --host 0.0.0.0 --port 8002 --reload"
+    ports:
+      - "8002:8002"
+
+  inventory_service:
+    image: python:3.11-slim
+    container_name: ecommerce_inventory_service
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r inventory_service/app/requirements.txt &&
+             uvicorn inventory_service.app.main:app --host 0.0.0.0 --port 8003 --reload"
+    ports:
+      - "8003:8003"
+
+  cart_service:
+    image: python:3.11-slim
+    container_name: ecommerce_cart_service
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r cart_service/app/requirements.txt &&
+             uvicorn cart_service.app.main:app --host 0.0.0.0 --port 8004 --reload"
+    ports:
+      - "8004:8004"
+
+  order_service:
+    image: python:3.11-slim
+    container_name: ecommerce_order_service
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r order_service/app/requirements.txt &&
+             uvicorn order_service.app.main:app --host 0.0.0.0 --port 8005 --reload"
+    ports:
+      - "8005:8005"
+
+  payment_service:
+    image: python:3.11-slim
+    container_name: ecommerce_payment_service
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r payment_service/app/requirements.txt &&
+             uvicorn payment_service.app.main:app --host 0.0.0.0 --port 8006 --reload"
+    ports:
+      - "8006:8006"
+
+  frontend:
+    image: node:20-alpine
+    container_name: ecommerce_frontend
+    working_dir: /app/frontend
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    depends_on:
+      - user_service
+      - product_service
+      - inventory_service
+      - cart_service
+      - order_service
+      - payment_service
+
